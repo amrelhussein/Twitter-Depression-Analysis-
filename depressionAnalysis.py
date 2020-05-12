@@ -33,7 +33,11 @@ columns = ['target','id','data','flag','user','text']
 
 df_sentiment = pd.read_csv(os.path.join(data_dir,data_file_names[1]),encoding=encoding, names=columns) #sentiment 140 data from kaggle
 df_depressive = pd.read_csv(os.path.join(data_dir,data_file_names[2]), sep = '|', header = None, usecols = range(0,9)) #depressive tweets obtained by scraping with twint
-# df_vader = pd.read_csv(os.path.join(data_dir,data_file_names[0]), usecols = range(1,5)) #depressive tweets obtained by "vader"
+df_depressive2 = pd.read_csv('input/depressed.csv',dtype=str)
+df_depressive2 = df_depressive2[['tweet']]
+labels = np.array([1]*len(df_depressive2))
+df_depressive2.columns = ['text']
+df_depressive2['label'] = labels
 
 # df_depressive.info()
 # print(df_depressive.head())
@@ -58,6 +62,7 @@ df_depressive=df_depressive[[5,'label']]
 df_depressive.dropna(inplace=True)
 df_depressive.rename(columns={5:'text'},inplace=True)
 print(df_depressive.head())
+
 
 df_depressive.info()
 df_sentiment.info()
@@ -337,10 +342,10 @@ callbacks = [ReduceLROnPlateau(monitor='val_loss', patience=5, cooldown=0),
 
 
 EPOCHS = 20
-# hist = model.fit(data_train, labels_train,
-#         validation_data=(data_val, labels_val),
-#         epochs=EPOCHS, batch_size=40, shuffle=True,
-#         callbacks=callbacks)
+hist = model.fit(data_train, labels_train,
+        validation_data=(data_val, labels_val),
+        epochs=EPOCHS, batch_size=40, shuffle=True,
+        callbacks=callbacks)
 
 #evaluate model
 score = model.evaluate(data_test, labels_test, batch_size=40)
@@ -349,7 +354,7 @@ print("ACCURACY:",score[1])
 print("LOSS:",score[0])
 
 # os.mkdir('saved_model')
-# model.save('saved_model/my_model')
+model.save('saved_model/my_model2')
 # latest = tf.train.latest_checkpoint(checkpoint_path)
 #
 # new_model = tf.keras.models.load_model('saved_model/my_model')
